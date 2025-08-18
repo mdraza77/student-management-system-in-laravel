@@ -29,13 +29,13 @@ class StudentController extends Controller
      */
     public function store(Request $request)
     {
-        $credentials = $request->validate([
+        $request->validate([
             'name' => 'required',
-            'email' => 'required|email|unique:students',
+            'email' => 'required|email|unique:students,email',
             'age' => 'required|integer',
         ]);
         Student::create($request->all());
-        return view('students.index');
+        return redirect()->route('students.index')->with('success', 'Student added successfully');
     }
 
     /**
@@ -49,17 +49,23 @@ class StudentController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Student $student)
     {
-        //
+        return view('students.edit', compact('student'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Student $student)
     {
-        //
+        $request->validate([
+            'name' => 'required',
+            'email' => 'required|email|unique:students,email,' . $student->id,
+            'age' => 'required|integer',
+        ]);
+        $student->update($request->all());
+        return redirect()->route('students.index')->with('success', 'Student updated successfully');
     }
 
     /**

@@ -26,9 +26,13 @@
                     <td>{{ $student->email }}</td>
                     <td>{{ $student->age }}</td>
                     <td>{{ $student->created_at == null ? 'Na' : $student->created_at }}</td>
+                    <td><a href="{{ route('students.edit', $student->id) }}">Edit</a></td>
                 </tr>
             @endforeach
         </table>
+    </div>
+    <div class="create m-3">
+        <a class="bg-blue-700 p-2 text-white rounded" href="{{ route('students.create') }}">Create</a>
     </div>
 </body>
 
