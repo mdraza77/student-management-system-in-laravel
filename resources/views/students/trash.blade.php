@@ -15,12 +15,12 @@
 
             <div class="p-6 flex justify-between items-center border-b border-gray-200">
                 <div>
-                    <h2 class="text-2xl font-semibold text-gray-800">Manage Students</h2>
-                    <p class="text-sm text-gray-500 mt-1">A list of all the students in the system.</p>
+                    <h2 class="text-2xl font-semibold text-gray-800">Trash - Deleted Students</h2>
+                    <p class="text-sm text-gray-500 mt-1">Restore or permanently delete student records.</p>
                 </div>
-                <a href="{{ route('students.create') }}"
-                    class="inline-block bg-blue-600 py-2 px-4 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors duration-200">
-                    Add New Student
+                <a href="{{ route('students.index') }}"
+                    class="inline-block bg-gray-500 py-2 px-4 text-white font-semibold rounded-lg hover:bg-gray-600 transition-colors duration-200">
+                    &larr; Back to Students List
                 </a>
             </div>
 
@@ -31,40 +31,41 @@
                             <th scope="col" class="px-6 py-3">Id</th>
                             <th scope="col" class="px-6 py-3">Name</th>
                             <th scope="col" class="px-6 py-3">Email</th>
-                            <th scope="col" class="px-6 py-3">Age</th>
-                            <th scope="col" class="px-6 py-3">Created At</th>
+                            <th scope="col" class="px-6 py-3">Deleted At</th>
                             <th scope="col" class="px-6 py-3 text-center">Actions</th>
                         </tr>
                     </thead>
 
                     <tbody>
-                        @forelse ($students as $student)
-                            {{-- This part runs if students exist --}}
+                        @forelse ($trashedStudents as $student)
+                            {{-- This part runs if the trash is not empty --}}
                             <tr class="bg-white border-b hover:bg-gray-50">
                                 <td class="px-6 py-4 font-medium text-gray-900">{{ $student->id }}</td>
                                 <td class="px-6 py-4">{{ $student->name }}</td>
                                 <td class="px-6 py-4">{{ $student->email }}</td>
-                                <td class="px-6 py-4">{{ $student->age }}</td>
-                                <td class="px-6 py-4">
-                                    {{ $student->created_at ? $student->created_at->format('d M, Y') : 'N/A' }}</td>
+                                <td class="px-6 py-4">{{ $student->deleted_at->format('d M, Y H:i A') }}</td>
 
                                 <td class="px-6 py-4 flex justify-center items-center gap-4">
-                                    <a href="{{ route('students.edit', $student->id) }}"
-                                        class="font-medium text-blue-600 hover:underline">Edit</a>
-                                    <form method="POST" action="{{ route('students.destroy', $student->id) }}"
-                                        onsubmit="return confirm('Are you sure you want to delete this student?');">
+                                    <form method="POST" action="{{ route('students.restore', $student->id) }}">
+                                        @csrf
+                                        <button type="submit"
+                                            class="font-medium text-green-600 hover:underline">Restore</button>
+                                    </form>
+
+                                    <form method="POST" action="{{ route('students.forceDelete', $student->id) }}"
+                                        onsubmit="return confirm('This action is irreversible and will permanently delete the student. Are you absolutely sure?');">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit"
-                                            class="font-medium text-red-600 hover:underline">Trash</button>
+                                        <button type="submit" class="font-medium text-red-600 hover:underline">Delete
+                                            Permanently</button>
                                     </form>
                                 </td>
                             </tr>
                         @empty
-                            {{-- This part runs if the $students collection is empty --}}
+                            {{-- This part runs if the trash is empty --}}
                             <tr class="bg-white border-b">
-                                <td colspan="6" class="px-6 py-4 text-center text-gray-500">
-                                    No students found.
+                                <td colspan="5" class="px-6 py-4 text-center text-gray-500">
+                                    The trash is empty.
                                 </td>
                             </tr>
                         @endforelse
