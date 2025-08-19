@@ -76,4 +76,26 @@ class StudentController extends Controller
         $student->delete();
         return redirect()->route('students.index')->with('success', 'Student moved to trash.');
     }
+
+    public function trash()
+    {
+        $trashedStudents = Student::onlyTrashed()->get();
+        dd($trashedStudents);
+        return view('students.trashed', compact('trashedStudents'));
+    }
+
+    public function restore($id)
+    {
+        Student::withTrashed()->findOrFail($id)->restore();
+
+        // Redirect back to the trash page with a success message
+        return redirect()->route('students.trashed')->with('success', 'Student restored successfully.');
+    }
+    public function forceDelete($id)
+    {
+        Student::withTrashed()->findOrFail($id)->forceDelete();
+
+        // Redirect back to the trash page with a success message
+        return redirect()->route('students.trashed')->with('success', 'Student permanently deleted.');
+    }
 }
